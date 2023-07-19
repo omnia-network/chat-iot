@@ -7,9 +7,20 @@ import { EmailIcon } from '@chakra-ui/icons';
 
 const CONTACT_US_LINK = 'mailto:info@omnia-network.com'
 
+const ContactUsButton = () => {
+  return (
+    <Button
+      leftIcon={<EmailIcon />}
+      colorScheme='blue'
+    >
+      <a href={CONTACT_US_LINK}>Contact us</a>
+    </Button>
+  )
+}
+
 type Message = {
-  content: string
-  isUser: boolean
+  content: string,
+  isUser: boolean,
   onTypingEnd?: () => void,
 }
 
@@ -150,7 +161,7 @@ function App() {
               isUser: true,
             },
           ]
-        });
+        })
 
         removeTypedText(state)
 
@@ -204,7 +215,7 @@ function App() {
               isUser: true,
             },
           ]
-        });
+        })
 
         removeTypedText(state)
 
@@ -238,60 +249,8 @@ function App() {
         })
       })
       .pauseFor(7_000)
-      // user input
-      .typeString('How can I contact you?')
-      .pauseFor(200)
-      .callFunction((state) => {
-        setIsLoading(true)
-
-        const content = getTypedText(state)
-
-        setMessages((prevMessages) => {
-          if (prevMessages.findIndex((message) => message.content === content) !== -1) {
-            return prevMessages
-          }
-
-          return [
-            ...prevMessages,
-            {
-              content,
-              isUser: true,
-            },
-          ]
-        })
-
-        removeTypedText(state)
-
-        sendEvent('user_message', {
-          index: 3,
-        })
-      })
-      .pauseFor(1_000)
-      // chatiot response
       .callFunction(() => {
         setIsContactButtonVisible(true)
-
-        const content = `You can simply drop us an email at <a href="${CONTACT_US_LINK}" id="contact-us-link">info@omnia-network.com</a>`
-
-        setMessages((prevMessages) => {
-          if (prevMessages.findIndex((message) => message.content === content) !== -1) {
-            return prevMessages
-          }
-
-          return [
-            ...prevMessages,
-            {
-              content,
-              isUser: false,
-              onTypingEnd: () => {
-                setIsLoading(false)
-                sendEvent('bot_response', {
-                  index: 3,
-                })
-              },
-            },
-          ]
-        })
       })
       .start()
   }, [])
@@ -321,11 +280,13 @@ function App() {
           base: '95%',
           md: '70%',
         }}
+        minHeight={80}
         gap={4}
         borderWidth={1}
         borderRadius='md'
         padding={2}
         bg='blackAlpha.500'
+        justifyContent='space-between'
       >
         <Messages
           messages={messages}
@@ -354,20 +315,14 @@ function App() {
           </HStack>
         )}
         {isContactButtonVisible && (
-          <Button
-            colorScheme='teal'
-          >
-            <a href={CONTACT_US_LINK}>Contact us</a>
-          </Button>
+          <ContactUsButton />
         )}
       </VStack>
       <VStack>
         <Heading as='h6' textAlign='center'>
           Get in touch with us
         </Heading>
-        <Button leftIcon={<EmailIcon />} colorScheme='blue'>
-          <a href={CONTACT_US_LINK}>Contact us</a>
-        </Button>
+        <ContactUsButton />
       </VStack>
     </VStack>
   )
