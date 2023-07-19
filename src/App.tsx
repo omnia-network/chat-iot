@@ -1,8 +1,9 @@
-import { Box, Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, HStack, Heading, Image, Text, VStack } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
 import Typewriter, { TypewriterClass, TypewriterState } from 'typewriter-effect';
 import chatIotLogo from './assets/chat-iot-logo.png';
 import { sendEvent } from './ga';
+import { EmailIcon } from '@chakra-ui/icons';
 
 const CONTACT_US_LINK = 'mailto:info@omnia-network.com'
 
@@ -50,6 +51,7 @@ const MessageElement: React.FC<Message> = ({ content, isUser, onTypingEnd }) => 
           display='flex'
           alignItems='center'
           justifyContent='center'
+          flexShrink={0}
         >
           <Text
             color='black'
@@ -156,7 +158,7 @@ function App() {
           index: 1,
         })
       })
-      .pauseFor(1000)
+      .pauseFor(1_000)
       // chatiot response
       .callFunction(() => {
         const content = 'The current temperature of the Acme plant is 27.1°C.'
@@ -181,7 +183,7 @@ function App() {
           ]
         })
       })
-      .pauseFor(3500)
+      .pauseFor(5_000)
       // user input
       .typeString('Give me last week\'s temperature')
       .pauseFor(200)
@@ -210,7 +212,7 @@ function App() {
           index: 2,
         })
       })
-      .pauseFor(1000)
+      .pauseFor(1_000)
       // chatiot response
       .callFunction(() => {
         const content = 'During last week, the mean temperature in the Acme plant was 25.4°C.'
@@ -235,7 +237,7 @@ function App() {
           ]
         })
       })
-      .pauseFor(5500)
+      .pauseFor(7_000)
       // user input
       .typeString('How can I contact you?')
       .pauseFor(200)
@@ -264,7 +266,7 @@ function App() {
           index: 3,
         })
       })
-      .pauseFor(1000)
+      .pauseFor(1_000)
       // chatiot response
       .callFunction(() => {
         setIsContactButtonVisible(true)
@@ -295,19 +297,35 @@ function App() {
   }, [])
 
   return (
-    <Box
+    <VStack
       minHeight='100vh'
       width='100%'
-      display='flex'
       alignItems='center'
-      justifyContent='center'
+      justifyContent='flex-start'
+      padding={2}
+      gap={12}
+      bgGradient='linear(to-b, whiteAlpha.50, blackAlpha.800)'
     >
+      <VStack
+        gap={12}
+      >
+        <Heading>
+          Chat IoT
+        </Heading>
+        <Heading as='h6' textAlign='center'>
+          Chat with your real-world data and devices
+        </Heading>
+      </VStack>
       <VStack
         width={{
           base: '95%',
           md: '70%',
         }}
         gap={4}
+        borderWidth={1}
+        borderRadius='md'
+        padding={2}
+        bg='blackAlpha.500'
       >
         <Messages
           messages={messages}
@@ -343,7 +361,15 @@ function App() {
           </Button>
         )}
       </VStack>
-    </Box>
+      <VStack>
+        <Heading as='h6' textAlign='center'>
+          Get in touch with us
+        </Heading>
+        <Button leftIcon={<EmailIcon />} colorScheme='blue'>
+          <a href={CONTACT_US_LINK}>Contact us</a>
+        </Button>
+      </VStack>
+    </VStack>
   )
 }
 
