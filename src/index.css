@@ -26,3 +26,7 @@
 #contact-us-link:hover {
   color: #535bf2 !important;
 }
+
+canvas {
+  margin-inline: auto;
+}
