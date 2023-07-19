@@ -2,6 +2,7 @@ import { Box, Button, HStack, Image, Text, VStack } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
 import Typewriter, { TypewriterClass, TypewriterState } from 'typewriter-effect';
 import chatIotLogo from './assets/chat-iot-logo.png';
+import { sendEvent } from './ga';
 
 const CONTACT_US_LINK = 'mailto:info@omnia-network.com'
 
@@ -150,6 +151,10 @@ function App() {
         });
 
         removeTypedText(state)
+
+        sendEvent('user_message', {
+          index: 1,
+        })
       })
       .pauseFor(1000)
       // chatiot response
@@ -168,10 +173,13 @@ function App() {
               isUser: false,
               onTypingEnd: () => {
                 setIsLoading(false)
+                sendEvent('bot_response', {
+                  index: 1,
+                })
               },
             },
           ]
-        });
+        })
       })
       .pauseFor(3500)
       // user input
@@ -197,6 +205,10 @@ function App() {
         });
 
         removeTypedText(state)
+
+        sendEvent('user_message', {
+          index: 2,
+        })
       })
       .pauseFor(1000)
       // chatiot response
@@ -215,10 +227,13 @@ function App() {
               isUser: false,
               onTypingEnd: () => {
                 setIsLoading(false)
+                sendEvent('bot_response', {
+                  index: 2,
+                })
               },
             },
           ]
-        });
+        })
       })
       .pauseFor(5500)
       // user input
@@ -241,9 +256,13 @@ function App() {
               isUser: true,
             },
           ]
-        });
+        })
 
         removeTypedText(state)
+
+        sendEvent('user_message', {
+          index: 3,
+        })
       })
       .pauseFor(1000)
       // chatiot response
@@ -264,10 +283,13 @@ function App() {
               isUser: false,
               onTypingEnd: () => {
                 setIsLoading(false)
+                sendEvent('bot_response', {
+                  index: 3,
+                })
               },
             },
           ]
-        });
+        })
       })
       .start()
   }, [])
