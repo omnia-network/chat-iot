@@ -54,8 +54,15 @@ const MessageElement: React.FC<Message> = ({ content, additionalContent, isUser,
   if (isUser) {
     return (
       <HStack
-        padding={4}
-        gap={4}
+        paddingBlock={4}
+        paddingInline={{
+          base: 2,
+          md: 4,
+        }}
+        gap={{
+          base: 2,
+          md: 4,
+        }}
         alignItems='flex-start'
       >
         <Box
@@ -91,10 +98,17 @@ const MessageElement: React.FC<Message> = ({ content, additionalContent, isUser,
 
   return (
     <HStack
-      padding={4}
-      backgroundColor='gray.700'
-      gap={4}
+      paddingBlock={4}
+      paddingInline={{
+        base: 2,
+        md: 4,
+      }}
+      gap={{
+        base: 2,
+        md: 4,
+      }}
       alignItems='flex-start'
+      backgroundColor='gray.700'
     >
       <Image
         width={{
@@ -386,7 +400,7 @@ function App() {
       .pauseFor(1_000)
       // chatiot response
       .callFunction(() => {
-        const content = 'The new rule has been set.<br><strong>John Mill</strong> will be notified if the <strong>Drilling machine #2</strong> is not active enough.'
+        const content = 'The new rule has been set.<br><strong>John Mill</strong> will be notified if the <strong>Drilling machine #2</strong> is not sufficiently operational.'
 
         setMessages((prevMessages) => {
           if (prevMessages.findIndex((message) => message.content === content) !== -1) {
@@ -436,7 +450,7 @@ function App() {
       </VStack>
       <VStack
         width={{
-          base: '95%',
+          base: '100%',
           md: '70%',
           xl: '50%',
         }}
