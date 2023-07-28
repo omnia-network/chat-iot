@@ -1,11 +1,13 @@
-import { Box, Button, HStack, Heading, Image, Text, VStack } from '@chakra-ui/react';
-import React, { useCallback, useState } from 'react';
-import Typewriter, { TypewriterClass, TypewriterState } from 'typewriter-effect';
-import chatIotLogo from './assets/chat-iot-logo.png';
-import { sendEvent } from './ga';
-import { EmailIcon } from '@chakra-ui/icons';
-import { Pie, Line } from 'react-chartjs-2';
-import 'chart.js/auto';
+import { Box, Button, HStack, Heading, Image, Text, VStack } from '@chakra-ui/react'
+import { EmailIcon } from '@chakra-ui/icons'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { Pie, Line } from 'react-chartjs-2'
+import Typewriter, { TypewriterClass, TypewriterState } from 'typewriter-effect'
+import chatIotLogo from './assets/chat-iot-logo.png'
+import qrImage from './assets/qr.png'
+import { sendEvent } from './ga'
+import 'chart.js/auto'
 
 const CONTACT_US_LINK = 'mailto:info@omnia-network.com'
 
@@ -183,6 +185,16 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [hideInput, setHideInput] = useState(false)
+  const [searchParams,] = useSearchParams()
+  const isLoop = useMemo(() => searchParams.get('loop') === 'true', [searchParams])
+  const isQr = useMemo(() => searchParams.get('qr') === 'true', [searchParams])
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollChat = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [])
 
   const onInit = useCallback((typewriter: TypewriterClass) => {
     typewriter
@@ -423,8 +435,31 @@ function App() {
           ]
         })
       })
+      .pauseFor(15_000)
+      .callFunction(() => {
+        if (isLoop) {
+          setIsLoading(false)
+          setHideInput(false)
+          setMessages([])
+          window.scrollTo(0, 0)
+          window.location.reload()
+        }
+      })
       .start()
-  }, [])
+  }, [isLoop])
+
+  useEffect(() => {
+    if (messages.length > 1) {
+      scrollChat()
+    }
+  }, [messages, scrollChat])
+
+  useEffect(() => {
+    if (isQr) {
+      // if the page is loaded from the link in the QR code, log it to analytics
+      sendEvent('scan_qr_code')
+    }
+  }, [isQr])
 
   return (
     <VStack
@@ -495,12 +530,23 @@ function App() {
           </Box>
         )}
       </VStack>
+      <div ref={messagesEndRef} />
       <VStack>
         <Heading as='h2' textAlign='center'>
           Interested in using Chat IoT for your business?
         </Heading>
         <ContactUsButton />
       </VStack>
+      <Box>
+        <Image
+          width={{
+            base: 32,
+            md: 60,
+          }}
+          src={qrImage}
+          alt='Chat IoT QR code'
+        />
+      </Box>
     </VStack>
   )
 }
