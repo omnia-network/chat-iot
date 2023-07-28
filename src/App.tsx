@@ -36,6 +36,7 @@ type MessagesProps = {
 
 const MessageElement: React.FC<Message> = ({ content, additionalContent, isUser, onTypingEnd }) => {
   const [showAdditionalContent, setShowAdditionalContent] = useState(false)
+  const messageRef = useRef<HTMLDivElement>(null)
 
   const onInit = useCallback((typewriter: TypewriterClass) => {
     typewriter
@@ -53,9 +54,18 @@ const MessageElement: React.FC<Message> = ({ content, additionalContent, isUser,
       .start()
   }, [])
 
+  useEffect(() => {
+    if (messageRef?.current) {
+      messageRef.current.scrollIntoView({
+        behavior: 'smooth',
+      })
+    }
+  }, [messageRef?.current])
+
   if (isUser) {
     return (
       <HStack
+        ref={messageRef}
         paddingBlock={4}
         paddingInline={{
           base: 2,
@@ -100,6 +110,7 @@ const MessageElement: React.FC<Message> = ({ content, additionalContent, isUser,
 
   return (
     <HStack
+      ref={messageRef}
       paddingBlock={4}
       paddingInline={{
         base: 2,
@@ -188,13 +199,8 @@ function App() {
   const [searchParams,] = useSearchParams()
   const isLoop = useMemo(() => searchParams.get('loop') === 'true', [searchParams])
   const isQr = useMemo(() => searchParams.get('qr') === 'true', [searchParams])
-  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const scrollChat = useCallback(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
-    }
-  }, [])
+  console.log(searchParams)
 
   const onInit = useCallback((typewriter: TypewriterClass) => {
     typewriter
@@ -449,12 +455,6 @@ function App() {
   }, [isLoop])
 
   useEffect(() => {
-    if (messages.length > 1) {
-      scrollChat()
-    }
-  }, [messages, scrollChat])
-
-  useEffect(() => {
     if (isQr) {
       // if the page is loaded from the link in the QR code, log it to analytics
       sendEvent('scan_qr_code')
@@ -530,7 +530,6 @@ function App() {
           </Box>
         )}
       </VStack>
-      <div ref={messagesEndRef} />
       <VStack>
         <Heading as='h2' textAlign='center'>
           Interested in using Chat IoT for your business?
